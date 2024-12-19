@@ -35,8 +35,6 @@ def getCSVE(feed_list) :
 
 getCSVE(rss_feed_list)
 
-test pull 
-
 """
 for item in rss_feed_list : 
     for k,v in item.items() : 
@@ -45,3 +43,23 @@ for item in rss_feed_list :
 """
 
 #ENRICHISSEMENT CVE 
+def enrich_cve(rssListe):
+    enriched_cve = []
+    for feed in rss_feed_list : 
+        for cve in feed['cves'] : 
+            cve_id = cve['name']
+            url = f"https://cveawg.mitre.org/api/cve/{cve_id}"
+            response = requests.get(url)
+            jsoned_response = response.json()
+            enriched_cve.append(jsoned_response)
+    return enriched_cve
+            
+
+#cette ligne de code prend bcp de temps a s'executer c'est normal y'a bcp de data qui entre donc je vais trouver une alternative pour ça la team pas
+#de probleme eas
+liste = enrich_cve(rssListe = rss_feed_list)
+
+for item in liste : 
+    print(item)
+
+
