@@ -19,7 +19,6 @@ for entry in rss_feed_avis.entries:
         "Date" : entry.published
     })
 
-#
 
 #GETING CVSE :
 def getCSVE(feed_list) :
@@ -29,15 +28,14 @@ def getCSVE(feed_list) :
         url = feed['Lien'] + "json"
         csve_list.append(str(url))
         response = requests.get(url)
-
-        if i == 1 : 
-                    break
-        
         jsoned_response = response.json()
-        for key, val in jsoned_response.items() : 
-            print(key, val)
+        feed['cves'] = jsoned_response['cves']
 
-        i += 1
         
 
 getCSVE(rss_feed_list)
+
+for item in rss_feed_list : 
+    for k,v in item.items() : 
+        print(k,v,)
+    print('\n\n\n\n')
