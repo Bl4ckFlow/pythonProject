@@ -35,7 +35,13 @@ def getCSVE(feed_list) :
 
 getCSVE(rss_feed_list)
 
+test pull 
+
+"""
 for item in rss_feed_list : 
     for k,v in item.items() : 
         print(k,v,)
     print('\n\n\n\n')
+"""
+
+#ENRICHISSEMENT CVE 
