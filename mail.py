@@ -1,6 +1,13 @@
 import smtplib
 from email.mime.text import MIMEText
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Retrieve the values using os.getenv()
+email_user = os.getenv("EMAIL")
+email_password = os.getenv("PASSWORD")
 
 
 def send_email(to_email, subject, body, from_email="votre_email@gmail.com", password="mot_de_passe_application"):
