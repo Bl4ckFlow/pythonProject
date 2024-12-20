@@ -62,4 +62,4 @@ liste = enrich_cve(rssListe = rss_feed_list)
 for item in liste : 
     print(item)
 
-
+print("totaux")
