@@ -1,65 +1,70 @@
-import feedparser
-import requests
-import re
-import json
+import utility as utl
 
 #GLOBAL VAR
-URL_AVIS = "https://www.cert.ssi.gouv.fr/avis/feed"
-
+URL_AVIS = "https://www.cert.ssi.gouv.fr/avis/feed/"
 
 #REQUESTING RSS_Flux
-rss_feed_avis = feedparser.parse(URL_AVIS)
-rss_feed_list = []
-
-for entry in rss_feed_avis.entries:
-    rss_feed_list.append({
-        "Titre " : entry.title,
-        "Description:" : entry.description,
-        "Lien" : entry.link,
-        "Date" : entry.published
-    })
-
+rss_feed_avis = utl.requestingRss(URL_AVIS)
+rss_feed_list = utl.listRss(rss_feed_avis)
 
 #GETING CVSE :
-def getCSVE(feed_list) :
-    csve_list = []
-    i = 0
-    for feed in feed_list :
-        url = feed['Lien'] + "json"
-        csve_list.append(str(url))
-        response = requests.get(url)
-        jsoned_response = response.json()
-        feed['cves'] = jsoned_response['cves']
-
-        
-
-getCSVE(rss_feed_list)
+utl.getCSVE(rss_feed_list)
 
 """
-for item in rss_feed_list : 
-    for k,v in item.items() : 
-        print(k,v,)
-    print('\n\n\n\n')
+df = utl.pd.DataFrame(rss_feed_list)
+df.to_csv("rss_feed_with_cves.csv", index=False)
 """
 
 #ENRICHISSEMENT CVE 
+
+#Connexion API CVE
 def enrich_cve(rssListe):
     enriched_cve = []
     for feed in rss_feed_list : 
+        i = 0
         for cve in feed['cves'] : 
+            print(cve["name"])
             cve_id = cve['name']
             url = f"https://cveawg.mitre.org/api/cve/{cve_id}"
-            response = requests.get(url)
-            jsoned_response = response.json()
-            enriched_cve.append(jsoned_response)
+
+            response = utl.requests.get(url)
+            if response.status_code == 200:
+                jsoned_response = response.json()
+                
+                cvss_score = utl.findCVSS_Score(jsoned_response)
+                print(cvss_score, type(cvss_score))
+
+                utl.determineSeverity(cvss_score)
+
+                template = {
+                    "Titre du bulletin (ANSSI)" : feed["Titre"],
+                    "Type de bulletin" : "",
+                    "Date de publication" : feed["Date"],
+                    "Identifiant CVE" : cve["name"],
+                    "Score CVSS" : cvss_score,
+                    "Base Severity" : utl.determineSeverity(cvss_score),
+                    "Description" : jsoned_response["containers"]["cna"]["descriptions"][0]["value"] ,
+                    "Type CWE" : "",
+
+                }
+                enriched_cve.append(template)
+        i+=1
+        if i == 0 : break
     return enriched_cve
-            
 
-#cette ligne de code prend bcp de temps a s'executer c'est normal y'a bcp de data qui entre donc je vais trouver une alternative pour ça la team pas
-#de probleme eas
-liste = enrich_cve(rssListe = rss_feed_list)
+enrichedCVE= enrich_cve(rss_feed_list)
 
-for item in liste : 
-    print(item)
 
-print("totaux")
+for i in enrichedCVE :
+    for key, value in i.items():
+        print(key,": " ,value)
+    print('\n\n\n')
+
+# enriched_data = enrich_cve(rss_feed_list)
+
+"""
+with open("enrichementOutput.txt", "w") as file:
+    for index, item in enumerate(enriched_data):
+        json.dump(item, file, indent=4)  # Write the JSON object
+        file.write("\n\n")
+"""
