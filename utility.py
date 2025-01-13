@@ -56,13 +56,21 @@ def findCVSS_Score(jsoned_response) :
         for key in metrics.keys() : 
             if "cvss" in key : 
                 return metrics[key]["baseScore"]
-        
+    except (KeyError, IndexError, TypeError) as e:
+        print(f"Error in 'adp' container: {e}", end=" ")
+
+    try : 
+        metrics = jsoned_response["containers"]["cna"]["metrics"][0]
+        for key in metrics.keys() : 
+            if "cvss" in key: 
+                return metrics[key]["baseScore"]
+    except (KeyError, IndexError, TypeError) as e:
+        print(f"Error in 'cna' container: {e}", end=" ")
+
+    return "Not found"
+
+def findDesc(jsoned_response) : 
+    try:
+        return jsoned_response["containers"]["cna"]["descriptions"][0]["value"]
     except :
-        try : 
-            metrics = jsoned_response["containers"]["cna"]["metrics"][0]
-            print(metrics.keys())
-            for key in metrics.keys() : 
-                if "cvss" in key.lower() : 
-                    return metrics[key]["baseScore"]
-        except :    
-            return "Not found"
+        return "Not found"

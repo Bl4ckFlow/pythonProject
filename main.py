@@ -23,7 +23,7 @@ def enrich_cve(rssListe):
     for feed in rss_feed_list : 
         i = 0
         for cve in feed['cves'] : 
-            print(cve["name"])
+            print(cve["name"], end=" ")
             cve_id = cve['name']
             url = f"https://cveawg.mitre.org/api/cve/{cve_id}"
 
@@ -32,9 +32,8 @@ def enrich_cve(rssListe):
                 jsoned_response = response.json()
                 
                 cvss_score = utl.findCVSS_Score(jsoned_response)
-                print(cvss_score, type(cvss_score))
-
                 utl.determineSeverity(cvss_score)
+                desc = utl.findDesc(jsoned_response)
 
                 template = {
                     "Titre du bulletin (ANSSI)" : feed["Titre"],
@@ -43,7 +42,7 @@ def enrich_cve(rssListe):
                     "Identifiant CVE" : cve["name"],
                     "Score CVSS" : cvss_score,
                     "Base Severity" : utl.determineSeverity(cvss_score),
-                    "Description" : jsoned_response["containers"]["cna"]["descriptions"][0]["value"] ,
+                    "Description" : desc,
                     "Type CWE" : "",
 
                 }
