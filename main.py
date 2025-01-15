@@ -11,11 +11,6 @@ rss_feed_list = utl.listRss(rss_feed_avis)
 #GETING CVSE :
 utl.getCSVE(rss_feed_list)
 
-"""
-df = utl.pd.DataFrame(rss_feed_list)
-df.to_csv("rss_feed_with_cves.csv", index=False)
-"""
-
 #ENRICHISSEMENT CVE 
 enrichedCVE= utl.enrich_cve(rss_feed_list)
 

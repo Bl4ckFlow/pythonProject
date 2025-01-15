@@ -1,20 +1,26 @@
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 def send_email(to_email, subject, body):
-    from_email = "pyyhongrp11@gmail.com"
-    password = "Chadiraoufilyess"
+    from_email = "pythongrp11@gmail.com"
+    password = "sako advd mkel kblr"
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Envoi de l'email
     try:
-        msg = MIMEText(body)
-        msg['From'] = from_email
-        msg['To'] = to_email
-        msg['Subject'] = subject
-
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(from_email, password)
-            server.sendmail(from_email, to_email, msg.as_string())
-
-        return f"Email successfully sent to {to_email}"
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(from_email, password)
+        server.send_message(msg)
+        server.quit()
+        print(f"Email envoyé avec succès à {to_email}.")
     except Exception as e:
-        return f"Failed to send email. Error: {e}"
+        print(f"Erreur lors de l'envoi de l'email : {e}")
+    
+send_email("monretour29@gmail.com", "Alerte CVE", "cc" )
