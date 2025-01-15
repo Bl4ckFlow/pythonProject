@@ -74,3 +74,9 @@ def findDesc(jsoned_response) :
         return jsoned_response["containers"]["cna"]["descriptions"][0]["value"]
     except :
         return "Not found"
+    
+def findCWE(jsoned_response) : 
+    try:
+        return jsoned_response["containers"]["cna"]["descriptions"][0]["value"]
+    except :
+        return "Not found"

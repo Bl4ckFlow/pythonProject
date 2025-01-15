@@ -17,6 +17,8 @@ df.to_csv("rss_feed_with_cves.csv", index=False)
 
 #ENRICHISSEMENT CVE 
 
+
+"""
 #Connexion API CVE
 def enrich_cve(rssListe):
     enriched_cve = []
@@ -62,8 +64,12 @@ for i in enrichedCVE :
 # enriched_data = enrich_cve(rss_feed_list)
 
 """
+
+"""
 with open("enrichementOutput.txt", "w") as file:
     for index, item in enumerate(enriched_data):
         json.dump(item, file, indent=4)  # Write the JSON object
         file.write("\n\n")
 """
+
+#Interprétation et Visualisation
